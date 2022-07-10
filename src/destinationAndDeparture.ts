@@ -1,24 +1,44 @@
-class destinationAndDeparture {
+export * from "./people";
+export class destinationAndDeparture {
     public departure: string
     public destination: string
     public basicFare: number
     public superExpressSurcharge: number
     public discount: number
-    public additionalCharge: number
     public shinkansen: string
     public season: string
 
-    clacFare(departure: string, destination: string) {
-        let isNozomi = this.isNozomi(this.shinkansen)
+    constructor(departure: string, destination: string, basicFare: number, superExpressSurcharge: number, discount: number, shinkansen: string, season: string) {
+        this.departure = departure;
+        this.destination = destination;
+        this.basicFare = basicFare;
+        this.superExpressSurcharge = superExpressSurcharge;
+        this.discount = discount;
+        this.shinkansen = shinkansen;
+        this.season = season;
+    }
+
+    clacFare(destination: string, shinkansen: string) {
+        const isNozomi = this.isNozomi(this.shinkansen)
         if (destination === "新大阪") {
-            this.superExpressSurcharge = 5490
+            this.superExpressSurcharge = 5490;
+            this.basicFare = 8910;
             if (isNozomi) {
-                this.additionalCharge = 320
+                this.superExpressSurcharge += 320;
             }
-        }else {
-            this.superExpressSurcharge = 5920
-            if (isNozomi){
-                this.additionalCharge = 530
+            const isFreeSeatAndHikari = this.isFreeSeatAndHikari(this.season, this.shinkansen);
+            if (isFreeSeatAndHikari) {
+                this.superExpressSurcharge -= this.discount;
+            }
+        } else {
+            this.superExpressSurcharge = 5920;
+            this.basicFare = 10010;
+            if (isNozomi) {
+                this.superExpressSurcharge += 530;
+            }
+            const isFreeSeatAndHikari = this.isFreeSeatAndHikari(this.season, this.shinkansen);
+            if (isFreeSeatAndHikari) {
+                this.superExpressSurcharge -= this.discount;
             }
         }
 
@@ -30,12 +50,11 @@ class destinationAndDeparture {
         return false
     }
 
-    clacDiscount(season: string){
-        if (season ===  "regular"){
+    isFreeSeatAndHikari(season: string, shinkansen: string) {
+        if (season === "regular" && shinkansen === "ひかり") {
             this.discount = 530
-            return this.discount
+            return true
         }
-        this.discount = 0
-        return this.discount
+        return false
     }
 }
